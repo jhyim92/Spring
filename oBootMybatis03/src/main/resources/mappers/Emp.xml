@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EmpDao">
+<!-- 					resultType = 결과 타입 -->
+	<select id="total" resultType="int">
+		select Count(*) FROM emp
+	</select>
+<!-- 	parameterType="Emp" == type="com.oracle.oBootMybatis03.model.Emp" -->
+	<select id="tkEmpListAll" parameterType="Emp" resultType="Emp">
+		<![CDATA[
+		select * from 
+			(select rownum rn, a.* from 
+				(select * from emp order by empno) a
+			)
+		where rn >= #{start} 
+		and rn <= #{end}
+		]]>
+	</select>
+	
+	<select id="tkEmpListAll3" parameterType="Emp" resultType="Emp">
+		select * from 
+			(select rownum rn, a.* from 
+				(select * from emp order by empno) a
+			)
+		where rn between #{start} and #{end}
+	</select>
+	
+	<select id="tkEmpSelOne" parameterType="Emp" resultType="Emp">
+		select * from emp where empno = #{empno} 
+	</select>
+	
+	<update id="tkEmpUpdate" parameterType="Emp">
+		update emp set ename = #{ename}, job = #{job}, sal = #{sal}, hiredate = #{hiredate},
+						<if test="comm != null">comm = #{comm},</if> mgr = #{mgr}, 
+						deptno = #{deptno} where empno = #{empno}
+	</update>
+	
+	<select id="tkSelectManager" resultType="Emp">
+		select * from emp where empno in (select mgr from emp)
+	</select>
+	
+	<insert id="insert" parameterType="Emp">
+		insert into emp values(#{empno}, #{ename}, #{job}, #{mgr}, #{hiredate}, #{sal}, #{comm}, #{deptno})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete from emp where empno = #{empno}
+	</delete>
+	
+</mapper>
